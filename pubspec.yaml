@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  applovin_max: ^2.4.6
   better_player:
     git:
       url: https://github.com/matthewrice345/betterplayer.git

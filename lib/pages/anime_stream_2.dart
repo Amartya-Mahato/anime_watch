@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:anime_watch/apis/gogo_api.dart';
 import 'package:anime_watch/modules/gogo_anime/gogo_anime_info.dart';
 import 'package:anime_watch/modules/gogo_anime/gogo_stream.dart';
@@ -6,6 +7,7 @@ import 'package:anime_watch/utils/ad_mob.dart';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:applovin_max/applovin_max.dart';
 
 class AnimeStreamPage2 extends StatefulWidget {
   final String animeName;
@@ -30,17 +32,10 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
   BannerAd? firstBanner;
   BannerAd? lastBanner;
   bool loading = true;
+  Map? sdkConfiguration;
 
   @override
   void initState() {
-    firstBanner = AdMob.bannerAd;
-    lastBanner = AdMob.bannerAd;
-    firstBanner!.load().then((value) {
-      lastBanner!.load().then((value) {
-        setState(() {});
-      });
-    });
-
     gogoInfoFetch().then((value) {
       setState(() {});
       gogoStreamEpisode(epIndex: 0).then((value) {
@@ -130,8 +125,6 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
       try {
         log('calling next Episode $ep');
         _gogoStream = await GogoApi.fetchStreamLinks(_gogoAnimeInfo!.episodes[ep].id);
-        // episode = ep + 1;
-        // setState(() {});
       } catch (e) {
         log(e.toString());
       }
@@ -149,7 +142,7 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
         .add(BetterPlayerDataSource.network(_gogoStream!.sources[quality].url,
             qualities: qualities,
             bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-              minBufferMs: 30000,
+              minBufferMs: 50000,
               maxBufferMs: 80000,
               bufferForPlaybackMs: 2500,
               bufferForPlaybackAfterRebufferMs: 5000,
@@ -178,22 +171,16 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
       qualities.addEntries({val.quality: val.url}.entries);
     }
     quality = qualities.length - 2;
-
-    // _betterPlayerPlaylistController!.betterPlayerController!.pause();
-    // _betterPlayerPlaylistController!.betterPlayerController!.dispose();
-    // _betterPlayerPlaylistController!.dispose();
     _betterPlayerDataSourceList = [
       BetterPlayerDataSource.network(_gogoStream!.sources[quality].url,
           qualities: qualities,
           bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-            minBufferMs: 30000,
+            minBufferMs: 50000,
             maxBufferMs: 80000,
             bufferForPlaybackMs: 2500,
             bufferForPlaybackAfterRebufferMs: 5000,
           )),
     ];
-    // _betterPlayerPlaylistController = BetterPlayerPlaylistController(_betterPlayerDataSourceList,
-    //     betterPlayerConfiguration: _betterPlayerConfiguration);
     _betterPlayerPlaylistController!.setupDataSourceList(_betterPlayerDataSourceList);
 
     log(_betterPlayerDataSourceList[0].url.toString());
@@ -312,14 +299,15 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
                         color: Colors.white,
                       ),
                     ),
-                    firstBanner != null
-                        ? Container(
-                            alignment: Alignment.bottomCenter,
-                            width: MediaQuery.of(context).size.width,
-                            height: firstBanner!.size.height.toDouble(),
-                            child: AdWidget(ad: firstBanner!),
-                          )
-                        : Container(),
+                    SizedBox(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      child: MaxAdView(
+                        adUnitId: "518b899de92da550",
+                        adFormat: AdFormat.banner,
+                        placement: "Ads",
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -448,14 +436,15 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),
-                    lastBanner != null
-                        ? Container(
-                            alignment: Alignment.bottomCenter,
-                            width: MediaQuery.of(context).size.width,
-                            height: lastBanner!.size.height.toDouble(),
-                            child: AdWidget(ad: lastBanner!),
-                          )
-                        : Container(),
+                    SizedBox(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width,
+                      child: MaxAdView(
+                        adUnitId: "518b899de92da550",
+                        adFormat: AdFormat.banner,
+                        placement: "Ads",
+                      ),
+                    ),
                   ],
                 ),
               ));
@@ -469,8 +458,6 @@ class _AnimeStreamPage2State extends State<AnimeStreamPage2> {
       }
       _betterPlayerPlaylistController!.dispose();
     }
-    lastBanner!.dispose();
-    firstBanner!.dispose();
     super.dispose();
   }
 }

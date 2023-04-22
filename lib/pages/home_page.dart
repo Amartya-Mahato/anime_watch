@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:anime_watch/apis/gogo_api.dart';
 import 'package:anime_watch/modules/gogo_anime/gogo_search.dart';
 import 'package:anime_watch/modules/gogo_anime/gogo_to_aring.dart';
-import 'package:anime_watch/pages/anime_stream.dart';
-import 'package:anime_watch/utils/ad_mob.dart';
+import 'package:applovin_max/applovin_max.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -27,14 +26,12 @@ class _HomePageState extends State<HomePage> {
   late GogoTopAiring _gogoTopAiring;
   BannerAd? topBanner;
   BannerAd? lastBanner;
-  bool load = false;
   bool noResult = false;
   TextEditingController _textEditingController = TextEditingController();
   bool isDub = false;
 
   @override
   void initState() {
-    getAds();
     getTopAiring();
     super.initState();
   }
@@ -46,19 +43,6 @@ class _HomePageState extends State<HomePage> {
     isLoading = false;
     noResult = _gogoTopAiring.results!.isEmpty ? true : false;
     setState(() {});
-  }
-
-  void getAds() {
-    topBanner = AdMob.bannerAd;
-    lastBanner = AdMob.bannerAd;
-
-    topBanner!.load().then((value) {
-      lastBanner!.load().then((value) {
-        setState(() {
-          load = true;
-        });
-      });
-    });
   }
 
   @override
@@ -127,15 +111,14 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 2,
             ),
-            load
-                ? SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width,
-                    child: AdWidget(
-                      ad: topBanner!,
-                    ),
-                  )
-                : Container(),
+            SizedBox(
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              child: MaxAdView(
+                adUnitId: "518b899de92da550",
+                adFormat: AdFormat.banner,
+              ),
+            ),
             const SizedBox(
               height: 2,
             ),
@@ -278,15 +261,14 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 2,
             ),
-            load
-                ? SizedBox(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width,
-                    child: AdWidget(
-                      ad: lastBanner!,
-                    ),
-                  )
-                : Container(),
+            SizedBox(
+              height: 50,
+              width: MediaQuery.of(context).size.width,
+              child: MaxAdView(
+                adUnitId: "518b899de92da550",
+                adFormat: AdFormat.banner,
+              ),
+            ),
           ],
         ),
       ),
@@ -316,5 +298,10 @@ class _HomePageState extends State<HomePage> {
       noResult = false;
       setState(() {});
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

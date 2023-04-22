@@ -1,4 +1,5 @@
 import 'package:anime_watch/pages/terms.dart';
+import 'package:applovin_max/applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:anime_watch/widgets/hidden_drawer.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+  await AppLovinMAX.initialize(
+      'ckFF4xBqSCd2idT6c02JklHrbWXkZPW8sGhdeWS25bQKEa6LMWIRIK60L9AOCmEw8T2Lahv5ia4w7MlBLscnIH');
+
   SharedPreferences pref = await SharedPreferences.getInstance();
   bool firstTime = pref.getBool('firstTime') ?? true;
   runApp(MyApp(
